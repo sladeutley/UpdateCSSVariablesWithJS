@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Scoped CSS Variables and JS</title>
+</head>
+<body>
+  <h2>Update CSS Variables with <span class='hl'>JS</span></h2>
+
+  <div class="controls">
+    <label for="spacing">Spacing:</label>
+    <input id="spacing" type="range" name="spacing" min="10" max="200" value="10" data-sizing="px">
+    <!-- needed to add a data attribute(an attribute you make up by putting 'data-' then something after it) with a suffix value of 'px' -->
+
+    <label for="blur">Blur:</label>
+    <input id="blur" type="range" name="blur" min="0" max="25" value="10" data-sizing="px">
+
+    <label for="base">Base Color</label>
+    <input id="base" type="color" name="base" value="#ffc600">
+  </div>
+
+  <img src="https://source.unsplash.com/7bwQXzbF6KE/800x500">
+
+  <style>
+    /* css variables work by declaring them on some sort of element, and in our case we're doing it on root, which is the highest element you can get, similar to declaring on html element */
+    :root {
+      /* declaring default styling */
+      --base: #ffc600;
+      --spacing: 10px;
+      --blur: 10px;
+    }
+
+    img {
+      padding: var(--spacing); 
+      /* when want to use variable in css, you say 'var'. Also, '--' is how you do it in css. */
+      background: var(--base);
+      filter: blur(var(--blur));
+    }
+
+    .h1 {
+      color: var(--base);
+    }
+    /*
+      misc styles, nothing to do with CSS variables
+    */
+
+    body {
+      text-align: center;
+      background: #193549;
+      color: white;
+      font-family: 'helvetica neue', sans-serif;
+      font-weight: 100;
+      font-size: 50px;
+    }
+
+    .controls {
+      margin-bottom: 50px;
+    }
+
+    input {
+      width: 100px;
+    }
+  </style>
+
+  <script>
+    const inputs = document.querySelectorAll('.controls input');
+
+    function handleUpdate () {
+      console.log('this',this);
+      console.log(this.value);
+      //need to get dataset - an object that gives you everything with 'data-' before it
+      const suffix = this.dataset.sizing || ''; //have '' because the base color doesnt have a sizing and then would give us undefined
+      console.log('suffix',suffix);
+      //now, need to update the actual variable, so how do you select a variable -> need to select entire document and set a property of base, spacing, or blur
+      document.documentElement.style.setProperty(`--${this.name}`, this.value + suffix);
+    }
+
+    inputs.forEach(input => input.addEventListener('change', handleUpdate));
+    //need to do mousemove as well so if you drag with mouse the input, it gets that value
+    inputs.forEach(input => input.addEventListener('mousemove', handleUpdate));
+
+    // LESSON OF THE DAY - when you use a css variable, then you can update that variable on any element and any selectors that are inside that element that reference that variable will be using it.
+    // ->one other thing you can do, is to scope them to be on a specific div, then the variable will use that value even bc it's closer
+    
+
+  </script>
+
+</body>
+</html>
